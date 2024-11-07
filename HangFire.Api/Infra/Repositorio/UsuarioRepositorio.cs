@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using HangFire.Api.Dominio.Interface;
 using System.Data;
-using System.Xml.Linq;
 
 namespace HangFire.Api.Infra.Repositorio
 {
