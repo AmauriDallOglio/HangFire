@@ -5,17 +5,26 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsuariosController : ControllerBase
+public class UsuarioController : ControllerBase
 {
     private readonly IUsuarioRepositorio _usuarioRepository;
-    public UsuariosController(IUsuarioRepositorio usuarioRepository)
+    public UsuarioController(IUsuarioRepositorio usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
 
     }
 
  
-    [HttpPost("agendar")]
+    [HttpGet("Conexao")]
+    public IActionResult Conexao()
+    {
+        // Retorna uma resposta 200 OK com o conteúdo de texto "Ok"
+        return Ok("Ok");
+    }
+
+
+
+    [HttpPost("AgendarInsercao")]
     public IActionResult AgendarInsercao([FromBody] Usuario usuario)
     {
         // Agenda a inserção do usuário para daqui a 1 minuto
@@ -23,8 +32,8 @@ public class UsuariosController : ControllerBase
         return Ok("Usuário agendado para inserção daqui a 1 minuto!");
     }
 
- 
-    [HttpPost("enfileirar")]
+
+    [HttpPost("EnfileirarInsercao")]
     public IActionResult EnfileirarInsercao([FromBody] Usuario usuario)
     {
         // Enfileira a inserção do usuário para execução imediata
@@ -32,7 +41,9 @@ public class UsuariosController : ControllerBase
         return Ok("Usuário enfileirado para inserção imediata!");
     }
 
-    [HttpPost("agendarEmUmMinuto")]
+
+    //https://localhost:7250/hangfire/jobs/scheduled
+    [HttpPost("AgendarInsercaoSemDados")]
     public IActionResult AgendarInsercaoSemDados()
     {
         string codigo = $"{DateTime.Now}";
