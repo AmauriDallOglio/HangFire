@@ -27,7 +27,6 @@ public class UsuarioController : ControllerBase
     [HttpPost("AgendarInsercao")]
     public IActionResult AgendarInsercao([FromBody] Usuario usuario)
     {
-        // Agenda a inserção do usuário para daqui a 1 minuto
         BackgroundJob.Schedule(() => _usuarioRepository.Inserir(usuario.Codigo, usuario.Nome, usuario.Email), TimeSpan.FromMinutes(1));
         return Ok("Usuário agendado para inserção daqui a 1 minuto!");
     }
@@ -36,7 +35,6 @@ public class UsuarioController : ControllerBase
     [HttpPost("EnfileirarInsercao")]
     public IActionResult EnfileirarInsercao([FromBody] Usuario usuario)
     {
-        // Enfileira a inserção do usuário para execução imediata
         BackgroundJob.Enqueue(() => _usuarioRepository.Inserir(usuario.Codigo, usuario.Nome, usuario.Email));
         return Ok("Usuário enfileirado para inserção imediata!");
     }

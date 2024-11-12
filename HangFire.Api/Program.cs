@@ -27,7 +27,7 @@ namespace HangFire.Api
             builder.Services.AddHangfireServer();
             builder.Services.AddSingleton<IDbConnection>(sp => new SqlConnection(connectionString));
             builder.Services.AddSingleton<IUsuarioRepositorio, UsuarioRepositorio>();
-
+            builder.Services.AddSingleton<IMensagemRepositorio, MensagemRepositorio>();
 
             //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.Mediatr.InserirUsuarioCommand).Assembly));
 

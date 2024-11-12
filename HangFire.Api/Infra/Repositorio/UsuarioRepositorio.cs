@@ -13,5 +13,3 @@ namespace HangFire.Api.Infra.Repositorio
         }
     }
 }
-
- 
