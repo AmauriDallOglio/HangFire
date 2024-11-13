@@ -9,18 +9,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Aplicacao\Mediatr\**" />
+    <Compile Remove="Aplicacao\NovaPasta\**" />
+    <Content Remove="Aplicacao\Mediatr\**" />
+    <Content Remove="Aplicacao\NovaPasta\**" />
+    <EmbeddedResource Remove="Aplicacao\Mediatr\**" />
+    <EmbeddedResource Remove="Aplicacao\NovaPasta\**" />
+    <None Remove="Aplicacao\Mediatr\**" />
+    <None Remove="Aplicacao\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Hangfire" Version="1.8.14" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Aplicacao\Mediatr\" />
   </ItemGroup>
 
 </Project>

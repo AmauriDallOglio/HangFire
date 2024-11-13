@@ -1,8 +1,13 @@
-﻿namespace HangFire.Api.Dominio.Interface
+﻿using HangFire.Api.Dominio.Entidade;
+
+namespace HangFire.Api.Dominio.Interface
 {
     public interface IUsuarioRepositorio
     {
-        void Inserir(string codigo, string nome, string email);
+        Task<Usuario> InserirDapperAsync(string codigo, string nome, string email);
+
+        Task<Usuario> InserirAsync(Usuario usuario);
+
     }
 
  

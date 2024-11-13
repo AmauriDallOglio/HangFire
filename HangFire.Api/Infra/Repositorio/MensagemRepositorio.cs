@@ -4,8 +4,13 @@ using System.Data;
 
 namespace HangFire.Api.Infra.Repositorio
 {
-    public class MensagemRepositorio(IDbConnection dbConnection) : IMensagemRepositorio
+    public class MensagemRepositorio : IMensagemRepositorio
     {
+        public MensagemRepositorio() 
+        {
+
+        }
+
         public void Inserir(string descricao)
         {
             var sql = "INSERT INTO Mensagem (Descricao) VALUES (@descricao);";

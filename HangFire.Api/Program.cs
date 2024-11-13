@@ -1,8 +1,11 @@
 using Hangfire;
 using HangFire.Api.Dominio.Interface;
+using HangFire.Api.Infra.Contexto;
 using HangFire.Api.Infra.Repositorio;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HangFire.Api
 {
@@ -12,10 +15,13 @@ namespace HangFire.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration["ConnectionStrings:Gravacao"];
+           // var connectionString = builder.Configuration["ConnectionStrings:Gravacao"];
+
+            string filePath1 = "C:\\Amauri\\HangFireConnection.txt";
+            string connectionString = File.ReadAllText(filePath1).Replace("\\\\", "\\");
 
 
-           
+
 
             builder.Services.AddControllers();
  
@@ -25,11 +31,16 @@ namespace HangFire.Api
 
             builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
             builder.Services.AddHangfireServer();
+            // Configuração do IDbConnection para o Dapper
             builder.Services.AddSingleton<IDbConnection>(sp => new SqlConnection(connectionString));
-            builder.Services.AddSingleton<IUsuarioRepositorio, UsuarioRepositorio>();
-            builder.Services.AddSingleton<IMensagemRepositorio, MensagemRepositorio>();
+            //Configuração do contexto
+            builder.Services.AddDbContext<CommandContext>(options => options.UseSqlServer(connectionString));
 
-            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.Mediatr.InserirUsuarioCommand).Assembly));
+            builder.Services.AddScoped<IMensagemRepositorio, MensagemRepositorio>();
+            builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.InserirUsuarioCommandHandler).Assembly));
+ 
 
 
             var app = builder.Build();
