@@ -1,20 +1,34 @@
 ﻿using Dapper;
+using HangFire.Api.Dominio;
 using HangFire.Api.Dominio.Interface;
+using HangFire.Api.Infra.Contexto;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace HangFire.Api.Infra.Repositorio
 {
     public class MensagemRepositorio : IMensagemRepositorio
     {
-        public MensagemRepositorio() 
+        private readonly CommandContext _commandContext;
+        private readonly IDbConnection _dbConnection;
+        public MensagemRepositorio(CommandContext commandContext) 
         {
-
+            _commandContext = commandContext;
+            _dbConnection = _commandContext.Database.GetDbConnection();
         }
 
-        public void Inserir(string descricao)
+        public async Task<int> InserirDapperAsync(string descricao)
         {
             var sql = "INSERT INTO Mensagem (Descricao) VALUES (@descricao);";
-            dbConnection.Execute(sql, new { Descricao = descricao});
+            var resultado = await _dbConnection.ExecuteAsync(sql, new { Descricao = descricao});
+            return resultado;
+        }
+
+        public async Task<int> InserirAsync(Mensagem mensagem)
+        {
+            var resultado = await _commandContext.Mensagem.AddAsync(mensagem);
+            var gravado = await _commandContext.SaveChangesAsync();
+            return gravado;
         }
     }
 }

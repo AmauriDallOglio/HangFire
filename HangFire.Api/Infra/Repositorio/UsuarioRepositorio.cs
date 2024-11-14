@@ -9,30 +9,29 @@ namespace HangFire.Api.Infra.Repositorio
 {
     public class UsuarioRepositorio : IUsuarioRepositorio
     {
-        private readonly CommandContext _context;
+        private readonly CommandContext _commandContext;
         private readonly IDbConnection _dbConnection;
 
         public UsuarioRepositorio(CommandContext context)
         {
-
-            _context = context;
-            _dbConnection = _context.Database.GetDbConnection();
+            _commandContext = context;
+            _dbConnection = _commandContext.Database.GetDbConnection();
 
         }
 
-        public async Task<Usuario> InserirDapperAsync(string codigo, string nome, string email)
+        public async Task<int> InserirDapperAsync(string codigo, string nome, string email)
         {
             var sql = "INSERT INTO Usuario (Codigo, Nome, Email) VALUES (@codigo, @Nome, @Email);";
-            await _dbConnection.ExecuteAsync(sql, new { Codigo = codigo, Nome = nome, Email = email });
+            var resultado = await _dbConnection.ExecuteAsync(sql, new { Codigo = codigo, Nome = nome, Email = email });
 
-            return new Usuario();
+            return resultado;
         }
 
-        public async Task<Usuario> InserirAsync(Usuario usuario)
+        public async Task<int> InserirAsync(Usuario usuario)
         {
-            await _context.Usuarios.AddAsync(usuario);
-            await _context.SaveChangesAsync();
-            return new Usuario();
+            var resultado = await _commandContext.Usuario.AddAsync(usuario);
+            var gravado = await _commandContext.SaveChangesAsync();
+            return gravado;
         }
 
     }

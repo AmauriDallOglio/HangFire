@@ -10,6 +10,8 @@ namespace HangFire.Api.Dominio.Entidade
         public string Codigo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
+        public DateTime DataCadastro { get; set; }
+
         public Usuario Incluir()
         {
             Id = 1;

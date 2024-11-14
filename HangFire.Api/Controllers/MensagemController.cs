@@ -1,6 +1,6 @@
-﻿using Hangfire;
-using HangFire.Api.Dominio;
+﻿using HangFire.Api.Aplicacao.MensagemCommand;
 using HangFire.Api.Dominio.Interface;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HangFire.Api.Controllers
@@ -10,9 +10,11 @@ namespace HangFire.Api.Controllers
     public class MensagemController : ControllerBase
     {
         private readonly IMensagemRepositorio _mensagemRepositorio;
-        public MensagemController(IMensagemRepositorio mensagemRepositorio)
+        private readonly IMediator _iMediator;
+        public MensagemController(IMensagemRepositorio mensagemRepositorio, IMediator iMediator)
         {
             _mensagemRepositorio = mensagemRepositorio;
+            _iMediator = iMediator;
 
         }
 
@@ -24,11 +26,20 @@ namespace HangFire.Api.Controllers
         }
 
         [HttpPost("InserirMensagem")]
-        public IActionResult InserirMensagem([FromBody] Mensagem mensagem)
+        public IActionResult InserirMensagem([FromBody] MensagemInserirCommandRequest mensagem)
         {
- 
-            BackgroundJob.Schedule(() => _mensagemRepositorio.Inserir(mensagem.Descricao), TimeSpan.FromMinutes(1));
-            return Ok("Mensagem agendada para inserção daqui a 1 minuto!");
+            var resultado = _iMediator.Send(mensagem);
+            return Ok("Mensagem agendada para inserção daqui a 1 minuto! ");
         }
+
+        //[HttpPost("InserirDapperMensagem")]
+        //public IActionResult InserirDappperMensagem([FromBody] Mensagem mensagem)
+        //{
+
+        //    BackgroundJob.Schedule(() => _mensagemRepositorio.InserirDapperAsync(mensagem.Descricao), TimeSpan.FromMinutes(1));
+        //    return Ok("Mensagem agendada para inserção daqui a 1 minuto!");
+        //}
     }
+
 }
+

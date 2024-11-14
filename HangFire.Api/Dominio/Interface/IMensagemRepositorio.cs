@@ -2,6 +2,7 @@
 {
     public interface IMensagemRepositorio
     {
-        void Inserir(string descricao);
+        Task<int> InserirDapperAsync(string descricao);
+        Task<int> InserirAsync(Mensagem mensagem);
     }
 }
