@@ -1,18 +1,19 @@
-﻿using HangFire.Api.Aplicacao.HangfireCommand;
+﻿using Hangfire;
+using HangFire.Api.Aplicacao.HangfireCommand;
 using HangFire.Api.Aplicacao.MensagemCommand;
 using HangFire.Api.Infra.Contexto;
 using MediatR;
 
 namespace HangFire.Api.Servico
 {
-    public class LimpaRegistroServico
+    public class HangFireServico
     {
         private readonly CommandContext _commandContext;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly HttpClient _httpClient;
         private readonly IMediator _mediator;
 
-        public LimpaRegistroServico(CommandContext context, IServiceScopeFactory serviceScopeFactory, HttpClient httpClient, IMediator imediator)
+        public HangFireServico(CommandContext context, IServiceScopeFactory serviceScopeFactory, HttpClient httpClient, IMediator imediator)
         {
             _commandContext = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -23,10 +24,13 @@ namespace HangFire.Api.Servico
 
         public void ProgramaEstartado()
         {
-            string erro = $"{DateTime.Now} Programa estartado!";
+            string erro = $"{DateTime.Now} Inicialização do sistema!";
             MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest() { Descricao = erro };
             _mediator.Send(mensagem);
         }
+
+
+
 
         public void DeletarRegistrosAntigos()
         {

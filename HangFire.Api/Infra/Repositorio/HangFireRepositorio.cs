@@ -20,7 +20,7 @@ namespace HangFire.Api.Infra.Repositorio
 
         public async Task<int> ExcluirRegistrosSucceeded()
         {
-            var sql = @"DELETE FROM Hangfire.Job WHERE StateName = 'Succeeded' ";
+            var sql = @"DELETE FROM Hangfire.Job WHERE StateName = 'Succeeded' AND CreatedAt <= cast(GETDATE()-1 AS datetime);";
 
             var resultado = await _dbConnection.ExecuteAsync(sql);
 

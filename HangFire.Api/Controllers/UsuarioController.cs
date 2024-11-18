@@ -28,8 +28,8 @@ public class UsuarioController : ControllerBase
     [HttpPost("Inserir"), ActionName("Inserir")]
     public async Task<IActionResult> Inserir([FromBody] UsuarioInserirCommandRequest request)
     {
-        var response = await _mediator.Send(request);
-        return Ok(response);
+        var resultado = await _mediator.Send(request);
+        return Ok(resultado);
 
     }
 

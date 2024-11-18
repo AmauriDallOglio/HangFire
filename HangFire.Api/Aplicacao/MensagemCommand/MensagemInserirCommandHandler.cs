@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using HangFire.Api.Dominio;
+using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
 using MediatR;
 
@@ -16,16 +16,14 @@ namespace HangFire.Api.Aplicacao.MensagemCommand
             _iMediator = mediator;
         }
 
-
-
         public async Task<MensagemInserirCommandResponse> Handle(MensagemInserirCommandRequest request, CancellationToken cancellationToken)
         {
-            Mensagem mensagem = new Mensagem();
-            mensagem.Descricao = request.Descricao;
+            Mensagem mensagem = new Mensagem() { Descricao = request.Descricao};
+            mensagem.Validar();
 
-            var aaa = BackgroundJob.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), TimeSpan.FromMinutes(1));
+            string codigo = BackgroundJob.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), TimeSpan.FromMinutes(1));
 
-            return new MensagemInserirCommandResponse();
+            return new MensagemInserirCommandResponse() { Mensagem = $"Adicionado na fila id: {codigo}" };
         }
     }
 }

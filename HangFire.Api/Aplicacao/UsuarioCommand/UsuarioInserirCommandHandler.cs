@@ -16,19 +16,19 @@ namespace HangFire.Api.Aplicacao.UsuarioCommand
             _iMediator = mediator;
         }
 
- 
-
         public async Task<UsuarioInserirCommandResponse> Handle(UsuarioInserirCommandRequest request, CancellationToken cancellationToken)
         {
-            Usuario usuario = new Usuario() { Codigo = request.Codigo, Email = request.Email, Nome = request.Nome, DataCadastro = DateTime.Now};
- 
+            Usuario usuario = new Usuario() { Codigo = request.Codigo, Email = request.Email, Nome = request.Nome};
+            usuario.Validar();
+
             string codigoJob = BackgroundJob.Schedule(() => _iUsuarioRepositorio.InserirAsync(usuario), TimeSpan.FromMinutes(1));
 
             MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest();
-            mensagem.Descricao = $"{DateTime.Now} - Programado com sucesso! Job: {codigoJob} ";
-            var bbb = _iMediator.Send(mensagem);
+            mensagem.Descricao = $"{DateTime.Now} - UsuarioInserirCommandHandler - Criado Job: {codigoJob} ";
+            var retornoMensagem = _iMediator.Send(mensagem).Result;
 
-            UsuarioInserirCommandResponse response = new UsuarioInserirCommandResponse() { CodigoJob = codigoJob };
+            string mensagemResultado = $"UsuarioInserirCommandResponse: Criado job {codigoJob} / MensagemInserirCommandRequest: Criado job: {retornoMensagem}";
+            UsuarioInserirCommandResponse response = new UsuarioInserirCommandResponse() { Mensagem = mensagemResultado };
 
             return response;
         }

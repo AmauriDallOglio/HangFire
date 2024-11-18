@@ -15,7 +15,7 @@ namespace HangFire.Api.Controllers
         {
             _mensagemRepositorio = mensagemRepositorio;
             _iMediator = iMediator;
-
+ 
         }
 
         [HttpGet("Conexao")]
@@ -25,11 +25,13 @@ namespace HangFire.Api.Controllers
             return Ok("Ok");
         }
 
-        [HttpPost("InserirMensagem")]
-        public IActionResult InserirMensagem([FromBody] MensagemInserirCommandRequest mensagem)
+ 
+        [HttpPost("Inserir")]
+        public async Task<IActionResult> Inserir([FromBody] MensagemInserirCommandRequest mensagem)
         {
-            var resultado = _iMediator.Send(mensagem);
-            return Ok("Mensagem agendada para inserção daqui a 1 minuto! ");
+
+            var resultado = await _iMediator.Send(mensagem);
+            return Ok(resultado);
         }
 
         //[HttpPost("InserirDapperMensagem")]

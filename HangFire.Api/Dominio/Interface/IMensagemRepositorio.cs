@@ -1,4 +1,6 @@
-﻿namespace HangFire.Api.Dominio.Interface
+﻿using HangFire.Api.Dominio.Entidade;
+
+namespace HangFire.Api.Dominio.Interface
 {
     public interface IMensagemRepositorio
     {

@@ -2,6 +2,6 @@
 {
     public class UsuarioInserirCommandResponse
     {
-        public string CodigoJob { get; set; } = string.Empty;
+        public string Mensagem { get; set; } = string.Empty;
     }
 }

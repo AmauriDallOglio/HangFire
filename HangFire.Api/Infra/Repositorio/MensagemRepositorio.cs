@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using HangFire.Api.Dominio;
+using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
 using HangFire.Api.Infra.Contexto;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +26,26 @@ namespace HangFire.Api.Infra.Repositorio
 
         public async Task<int> InserirAsync(Mensagem mensagem)
         {
-            var resultado = await _commandContext.Mensagem.AddAsync(mensagem);
-            var gravado = await _commandContext.SaveChangesAsync();
-            return gravado;
+            //try
+            //{
+                await _commandContext.Mensagem.AddAsync(mensagem);
+                var gravado = await _commandContext.SaveChangesAsync();
+                return gravado;
+            //}
+            //catch (DbUpdateException ex)
+            //{
+            //    // Tratamento específico para erros de atualização no Entity Framework
+            //    Console.WriteLine($"Erro ao inserir mensagem com Entity Framework: {ex.Message}");
+            //    throw new InvalidOperationException("Ocorreu um erro ao inserir a mensagem no banco de dados.", ex);
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Tratamento genérico para outros tipos de exceção
+            //    Console.WriteLine($"Erro inesperado: {ex.Message}");
+            //    throw new InvalidOperationException("Ocorreu um erro ao processar a operação de inserção.", ex);
+            //}
+
+
         }
     }
 }

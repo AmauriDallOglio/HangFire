@@ -2,6 +2,7 @@ using Hangfire;
 using HangFire.Api.Dominio.Interface;
 using HangFire.Api.Infra.Contexto;
 using HangFire.Api.Infra.Repositorio;
+using HangFire.Api.Middleware;
 using HangFire.Api.Servico;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace HangFire.Api
 {
     public class Program
     {
+        [Obsolete]
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +21,6 @@ namespace HangFire.Api
 
             string filePath1 = "C:\\Amauri\\HangFireConnection.txt";
             string connectionString = File.ReadAllText(filePath1).Replace("\\\\", "\\");
-
-
 
             //Configuração do swagger
             builder.Services.AddControllers();
@@ -39,8 +39,13 @@ namespace HangFire.Api
             builder.Services.AddScoped<IHangFireRepositorio, HangFireRepositorio>();
             //Configuração do Mediatr
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.UsuarioInserirCommandHandler).Assembly));
-            //Registro do HttpClient precisa ser registrado diretamente para o serviço
-            builder.Services.AddHttpClient<LimpaRegistroServico>();
+            ////Isso garante que todos os RequestHandler necessários sejam registrados com seus ciclos de vida apropriados.
+            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<MensagemInserirCommandRequest>());
+            //Para que o Hangfire possa resolver as dependências da classe HangFireServico
+            builder.Services.AddHttpClient<HangFireServico>();
+
+
+
 
             var app = builder.Build();
 
@@ -72,7 +77,7 @@ namespace HangFire.Api
             //});
  
 
-            BackgroundJob.Enqueue<LimpaRegistroServico>(service => service.ProgramaEstartado());
+            BackgroundJob.Enqueue<HangFireServico>(service => service.ProgramaEstartado());
 
             //RecurringJob.AddOrUpdate<LimpaRegistroServico>(
             //    "deletar-registros-antigos",
@@ -80,12 +85,23 @@ namespace HangFire.Api
             //    "00 36 15 * * *", // 11:34:10 = "10 34 11 * * *"
             //    TimeZoneInfo.Local);
 
-            RecurringJob.AddOrUpdate<LimpaRegistroServico>(
-                "limpar-jobs-antigos",
+            RecurringJob.AddOrUpdate<HangFireServico>(
+                "Limpar-Jobs-Succeeded-Antigos",
                 service => service.LimparJobsSucceededAntigos(),
-                "00 01 17 * * *", // Executa todos os dias às 23:59
+                "00 02 08 * * *", // Executa todos os dias às 23:59
                 TimeZoneInfo.Local);
 
+            //// Agendando o job
+            //RecurringJob.AddOrUpdate<HangFireServico>(
+            //    "Limpar-Jobs-Succeeded-Antigos",  // Nome do job
+            //    service => service.LimparJobsSucceededAntigos(), // Método da instância
+            //    Cron.Minutely,                // Frequência do job
+            //    TimeZoneInfo.Local            // Fuso horário local
+            //);
+
+
+
+            app.UseMiddleware<TratamentoErroMiddleware>();
 
             app.MapControllers();
 
