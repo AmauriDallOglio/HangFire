@@ -7,8 +7,6 @@ namespace HangFire.Api.Dominio.Interface
         Task<int> InserirDapperAsync(string codigo, string nome, string email);
         Task<int> InserirAsync(Usuario usuario);
     }
-
- 
 }
 
 

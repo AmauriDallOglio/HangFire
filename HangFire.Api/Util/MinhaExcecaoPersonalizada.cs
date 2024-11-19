@@ -2,6 +2,6 @@
 {
     public class MinhaExcecaoPersonalizada : Exception
     {
-        public MinhaExcecaoPersonalizada(string message) : base(message) { }
+        public MinhaExcecaoPersonalizada(string mensagem) : base(mensagem) { }
     }
 }

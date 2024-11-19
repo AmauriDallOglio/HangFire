@@ -1,4 +1,4 @@
-﻿using HangFire.Api.Aplicacao.MensagemCommand;
+﻿using HangFire.Api.Aplicacao.MensagemErroCommand;
 using HangFire.Api.Util;
 using MediatR;
 
@@ -37,8 +37,6 @@ namespace HangFire.Api.Middleware
 
         private async Task TratamentoExceptionAsync(HttpContext context, Exception exception)
         {
-           
-
             var httpDicionarioCodigoErros = new Dictionary<Type, int>
             {
                 { typeof(ArgumentException), StatusCodes.Status400BadRequest },
@@ -67,26 +65,17 @@ namespace HangFire.Api.Middleware
 
             try
             {
-                //No ASP.NET Core, middlewares são geralmente singleton, o uso de using com CreateScope é uma prática válida e eficaz para resolver o problema de
-                //ciclos de vida scoped em middlewares singleton no ASP.NET Core. Ele garante que o escopo criado seja descartado automaticamente após o uso.
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                    string mensagem = mensagemDoLog;
-                    MensagemInserirCommandRequest mensagemInserirCommandRequest = new MensagemInserirCommandRequest { Descricao = mensagem };
-                    await mediator.Send(mensagemInserirCommandRequest);
+                    MensagemErroInserirCommandRequest requestErro = new MensagemErroInserirCommandRequest() { Descricao = mensagemDoLog, Chamada = _PathString };
+                    MensagemErroInserirCommandResponse responseErro = mediator.Send(requestErro, new CancellationToken()).Result;
                 }
-
-                //////Para gerar o log
-                //string mensagemd = $"{DateTime.Now} TratamentoErroMiddleware: {exception.Message}";
-                //MensagemInserirCommandRequest mensagemInserirCommandRequestd = new MensagemInserirCommandRequest { Descricao = mensagemd };
-                //await _mediator.Send(mensagemInserirCommandRequestd);
             }
             catch (Exception mediatorEx)
             {
                 await new ArquivoLog().IncluirLinha(_caminhoLog, mediatorEx, _PathString, "Erro no CreateScope");
             }
-
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(response);
         }

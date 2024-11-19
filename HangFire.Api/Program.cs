@@ -4,6 +4,7 @@ using HangFire.Api.Infra.Contexto;
 using HangFire.Api.Infra.Repositorio;
 using HangFire.Api.Middleware;
 using HangFire.Api.Servico;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -37,14 +38,15 @@ namespace HangFire.Api
             builder.Services.AddScoped<IMensagemRepositorio, MensagemRepositorio>();
             builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
             builder.Services.AddScoped<IHangFireRepositorio, HangFireRepositorio>();
+            builder.Services.AddScoped<IMensagemErroRepositorio, MensagemErroRepositorio>();
             //Configuração do Mediatr
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.UsuarioInserirCommandHandler).Assembly));
+             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.UsuarioInserirCommandHandler).Assembly));
+ 
+
             ////Isso garante que todos os RequestHandler necessários sejam registrados com seus ciclos de vida apropriados.
             //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<MensagemInserirCommandRequest>());
             //Para que o Hangfire possa resolver as dependências da classe HangFireServico
             builder.Services.AddHttpClient<HangFireServico>();
-
-
 
 
             var app = builder.Build();
@@ -55,11 +57,8 @@ namespace HangFire.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-        
             app.UseHangfireDashboard(); // Opcional: Adiciona uma dashboard para monitoramento dos jobs
             app.MapHangfireDashboard(); // Mapeia a rota padrão para acessar a dashboard em "/hangfire"
 
@@ -77,34 +76,34 @@ namespace HangFire.Api
             //});
  
 
-            BackgroundJob.Enqueue<HangFireServico>(service => service.ProgramaEstartado());
+            BackgroundJob.Enqueue<HangFireServico>(service => service.InicializacaoDoSistema());
 
-            //RecurringJob.AddOrUpdate<LimpaRegistroServico>(
-            //    "deletar-registros-antigos",
-            //    service => service.DeletarRegistrosAntigos(),
-            //    "00 36 15 * * *", // 11:34:10 = "10 34 11 * * *"
-            //    TimeZoneInfo.Local);
+            ////RecurringJob.AddOrUpdate<LimpaRegistroServico>(
+            ////    "deletar-registros-antigos",
+            ////    service => service.DeletarRegistrosAntigos(),
+            ////    "00 36 15 * * *", // 11:34:10 = "10 34 11 * * *"
+            ////    TimeZoneInfo.Local);
 
-            RecurringJob.AddOrUpdate<HangFireServico>(
-                "Limpar-Jobs-Succeeded-Antigos",
-                service => service.LimparJobsSucceededAntigos(),
-                "00 02 08 * * *", // Executa todos os dias às 23:59
-                TimeZoneInfo.Local);
+            ////RecurringJob.AddOrUpdate<HangFireServico>(
+            ////    "Limpar-Jobs-Succeeded-Antigos",
+            ////    service => service.LimparJobsSucceededAntigos(),
+            ////    "00 02 08 * * *", // Executa todos os dias às 23:59
+            ////    TimeZoneInfo.Local);
 
-            //// Agendando o job
-            //RecurringJob.AddOrUpdate<HangFireServico>(
-            //    "Limpar-Jobs-Succeeded-Antigos",  // Nome do job
-            //    service => service.LimparJobsSucceededAntigos(), // Método da instância
-            //    Cron.Minutely,                // Frequência do job
-            //    TimeZoneInfo.Local            // Fuso horário local
-            //);
+            ////// Agendando o job
+            ////RecurringJob.AddOrUpdate<HangFireServico>(
+            ////    "Limpar-Jobs-Succeeded-Antigos",  // Nome do job
+            ////    service => service.LimparJobsSucceededAntigos(), // Método da instância
+            ////    Cron.Hourly,                          
+            ////    TimeZoneInfo.Local            // Fuso horário local
+            ////);
 
+            
+            HangFireJobs.LimparJobsSucceededAntigosExecutaCadaMinuto();
 
 
             app.UseMiddleware<TratamentoErroMiddleware>();
-
             app.MapControllers();
-
             app.Run();
         }
     }

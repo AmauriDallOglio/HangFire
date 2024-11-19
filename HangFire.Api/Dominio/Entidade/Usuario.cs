@@ -40,5 +40,13 @@ namespace HangFire.Api.Dominio.Entidade
                 throw new InvalidOperationException(resultado);
             }
         }
+
+        public Usuario IncluirAutomaticamente()
+        {
+            Codigo = $"{DateTime.Now}";
+            Nome = $"Usuario_{Guid.NewGuid().ToString().Substring(0, 8)}";
+            Email = $"{Nome.ToLower()}@example.com";
+            return this;
+        }
     }
 }

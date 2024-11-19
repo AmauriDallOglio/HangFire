@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using HangFire.Api.Dominio.Entidade;
+using MediatR;
 using System.Text.Json.Serialization;
 
 namespace HangFire.Api.Aplicacao.UsuarioCommand
@@ -12,6 +13,15 @@ namespace HangFire.Api.Aplicacao.UsuarioCommand
 
         [JsonIgnore]
         public DateTime DataCadastro { get; set; }
+
+        public UsuarioInserirCommandRequest ConverterDto(Usuario usuario)
+        {
+            Nome = usuario.Nome;
+            Codigo = usuario.Codigo;
+            Email = usuario.Email;
+            DataCadastro = usuario.DataCadastro;
+            return this;
+        }
     }
     
 }

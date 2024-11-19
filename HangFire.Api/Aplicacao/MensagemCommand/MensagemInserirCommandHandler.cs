@@ -5,7 +5,6 @@ using MediatR;
 
 namespace HangFire.Api.Aplicacao.MensagemCommand
 {
-
     public class MensagemInserirCommandHandler : IRequestHandler<MensagemInserirCommandRequest, MensagemInserirCommandResponse>
     {
         private readonly IMensagemRepositorio _iMensagemRepositorio;
@@ -18,12 +17,12 @@ namespace HangFire.Api.Aplicacao.MensagemCommand
 
         public async Task<MensagemInserirCommandResponse> Handle(MensagemInserirCommandRequest request, CancellationToken cancellationToken)
         {
-            Mensagem mensagem = new Mensagem() { Descricao = request.Descricao};
+            Mensagem mensagem = new Mensagem() { Descricao = request.Descricao };
             mensagem.Validar();
 
-            string codigo = BackgroundJob.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), TimeSpan.FromMinutes(1));
-
-            return new MensagemInserirCommandResponse() { Mensagem = $"Adicionado na fila id: {codigo}" };
+            mensagem.Descricao = $"{DateTime.Now} - MensagemInserirCommandHandler - {request.Descricao}";
+            string codigoJob = BackgroundJob.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), TimeSpan.FromMinutes(1));
+            return new MensagemInserirCommandResponse() { Mensagem = $"Adicionado na fila id: {codigoJob}" };
         }
     }
 }

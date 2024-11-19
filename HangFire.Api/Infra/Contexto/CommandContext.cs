@@ -1,5 +1,4 @@
-﻿using HangFire.Api.Dominio;
-using HangFire.Api.Dominio.Entidade;
+﻿using HangFire.Api.Dominio.Entidade;
 using Microsoft.EntityFrameworkCore;
 
 namespace HangFire.Api.Infra.Contexto
@@ -13,7 +12,7 @@ namespace HangFire.Api.Infra.Contexto
 
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Mensagem> Mensagem { get; set; }
-
+        public DbSet<MensagemErro> MensagemErro { get; set; }
         public DbSet<HangfireJob> HangfireJob { get; set; }
     }
 }

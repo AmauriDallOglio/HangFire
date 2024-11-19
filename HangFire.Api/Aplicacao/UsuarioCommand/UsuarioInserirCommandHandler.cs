@@ -24,10 +24,10 @@ namespace HangFire.Api.Aplicacao.UsuarioCommand
             string codigoJob = BackgroundJob.Schedule(() => _iUsuarioRepositorio.InserirAsync(usuario), TimeSpan.FromMinutes(1));
 
             MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest();
-            mensagem.Descricao = $"{DateTime.Now} - UsuarioInserirCommandHandler - Criado Job: {codigoJob} ";
+            mensagem.Descricao = $"UsuarioInserirCommandHandler - Criado Job: {codigoJob} ";
             var retornoMensagem = _iMediator.Send(mensagem).Result;
+            string mensagemResultado = mensagem.Descricao + $" / MensagemInserirCommandRequest: Criado job: {retornoMensagem}";
 
-            string mensagemResultado = $"UsuarioInserirCommandResponse: Criado job {codigoJob} / MensagemInserirCommandRequest: Criado job: {retornoMensagem}";
             UsuarioInserirCommandResponse response = new UsuarioInserirCommandResponse() { Mensagem = mensagemResultado };
 
             return response;

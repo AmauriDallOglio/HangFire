@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using HangFire.Api.Aplicacao.UsuarioCommand;
+using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,6 @@ public class UsuarioController : ControllerBase
     [HttpGet("Conexao")]
     public IActionResult Conexao()
     {
-        // Retorna uma resposta 200 OK com o conteúdo de texto "Ok"
         return Ok("Ok");
     }
 
@@ -54,21 +54,10 @@ public class UsuarioController : ControllerBase
     [HttpPost("AgendarInsercaoSemDados")]
     public IActionResult AgendarInsercaoSemDados()
     {
-        string codigo = $"{DateTime.Now}";
-        var nome = $"Usuario_{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var email = $"{nome.ToLower()}@example.com";
-
-        UsuarioInserirCommandRequest usuario = new UsuarioInserirCommandRequest()
-        {
-            Codigo = codigo,
-            Nome = nome,
-            Email = email,
-            DataCadastro = DateTime.Now,
-        }; 
-
-        var resultado = _mediator.Send(usuario);
-
-        return Ok($"Usuário '{nome}' agendado para inserção daqui a 1 minuto com o email '{email}'!");
+        Usuario usuario = new Usuario().IncluirAutomaticamente();
+        UsuarioInserirCommandRequest usuarioInserirCommandRequest = new UsuarioInserirCommandRequest().ConverterDto(usuario);
+        var resultado = _mediator.Send(usuarioInserirCommandRequest);
+        return Ok($"Usuário '{usuarioInserirCommandRequest.Nome}' agendado para inserção daqui a 1 minuto com o email '{usuarioInserirCommandRequest.Email}'!");
 
     }
 
@@ -77,18 +66,8 @@ public class UsuarioController : ControllerBase
     [HttpPost("AgendarInsercaoSemDadosDapper")]
     public IActionResult AgendarInsercaoSemDadosDapper()
     {
-        string codigo = $"{DateTime.Now}";
-        var nome = $"Usuario_{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var email = $"{nome.ToLower()}@example.com";
-
-        //Usuario usuario = new Usuario() { Codigo = codigo, Nome = nome, Email = email }; 
-
-        BackgroundJob.Schedule(() => _usuarioRepository.InserirDapperAsync(codigo, nome, email), TimeSpan.FromMinutes(1));
-
-        return Ok($"Usuário '{nome}' agendado para inserção daqui a 1 minuto com o email '{email}'!");
-
+        Usuario usuario = new Usuario().IncluirAutomaticamente();
+        BackgroundJob.Schedule(() => _usuarioRepository.InserirDapperAsync(usuario.Codigo, usuario.Nome, usuario.Nome), TimeSpan.FromMinutes(1));
+        return Ok($"Usuário '{usuario.Nome}' agendado para inserção daqui a 1 minuto com o email '{usuario.Email}'!");
     }
-
-
-
 }

@@ -21,22 +21,17 @@ namespace HangFire.Api.Aplicacao.HangfireCommand
 
         public async Task<HangfireExcluirSucceededCommandResponse> Handle(HangfireExcluirSucceededCommandRequest request, CancellationToken cancellationToken)
         {
-            string codigoJob = string.Empty;
-            try
-            {
-                codigoJob = BackgroundJob.Schedule(() => _iHangFireRepositorio.ExcluirRegistrosSucceeded(), TimeSpan.FromMinutes(1));
-            }
-            catch (Exception ex)
-            {
-                string erro = $"{DateTime.Now} [LimparJobsAntigos] Erro: {ex.Message}.";
-                MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest() { Descricao = erro };
-                await _iMediator.Send(mensagem, cancellationToken);
-            }
 
-            return new HangfireExcluirSucceededCommandResponse()
-            {
-                Mensagem = $"HangfireExcluirSucceededCommandHandler: {codigoJob}"
-            };
+            string codigoJob = BackgroundJob.Schedule(() => _iHangFireRepositorio.ExcluirRegistrosSucceeded(), TimeSpan.FromMinutes(1));
+
+            string mensagemResultado =  $"HangfireExcluirSucceededCommandHandler - Criado Job: {codigoJob} ";
+            MensagemInserirCommandRequest mensagemInserirCommandRequest = new MensagemInserirCommandRequest() { Descricao = mensagemResultado };
+            MensagemInserirCommandResponse retornoMensagem = _iMediator.Send(mensagemInserirCommandRequest).Result;
+            mensagemResultado += $" / Mensagem job: {retornoMensagem.Mensagem}";
+
+
+            HangfireExcluirSucceededCommandResponse response = new HangfireExcluirSucceededCommandResponse() { Mensagem = mensagemResultado };
+            return response;
         }
     }
 }
