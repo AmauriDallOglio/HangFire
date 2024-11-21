@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using HangFire.Api.Dominio.Interface;
 using HangFire.Api.Infra.Contexto;
+using HangFire.Api.Util;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -20,10 +21,19 @@ namespace HangFire.Api.Infra.Repositorio
 
         public async Task<int> ExcluirRegistrosSucceeded()
         {
-            var sql = @"DELETE FROM Hangfire.Job WHERE StateName = 'Succeeded' AND CreatedAt <= cast(GETDATE()-1 AS datetime);";
+            int resultado = 0;
+            try
+            {
+                var sql = @"DELETE FROM Hangfire.Job WHERE StateName = 'Succeeded' AND CreatedAt <= cast(GETDATE()-1 AS datetime);";
 
-            var resultado = await _dbConnection.ExecuteAsync(sql);
-
+                resultado = await _dbConnection.ExecuteAsync(sql);
+                HelperConsoleColor.Sucesso("HangFireRepositorio/ExcluirRegistrosSucceeded: Sucesso!");
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                await new ArquivoLog().IncluirLinha("logs/error_log.txt", ex, "MensagemRepositorio", "MensagemRepositori: Erro ao gravar registro!");
+            }
             return resultado;
         }
 

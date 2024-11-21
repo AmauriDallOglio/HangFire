@@ -1,4 +1,7 @@
-﻿namespace HangFire.Api.Infra.Repositorio
+﻿using HangFire.Api.Dominio.Entidade;
+using System.Diagnostics.Metrics;
+
+namespace HangFire.Api.Infra.Contexto
 {
     public class script
     {
@@ -14,12 +17,15 @@
 
         // alter table usuario add DataCadastro datetime ;
 
+
         //CREATE TABLE Mensagem(
         //Id INT PRIMARY KEY IDENTITY(1,1), 
         //Descricao NVARCHAR(500) NOT NULL,
 
         //);
 
+
+        //alter table Mensagem add DataCadastro datetime not null;
 
 
         //CREATE TABLE MensagemErro(

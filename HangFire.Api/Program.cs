@@ -4,7 +4,7 @@ using HangFire.Api.Infra.Contexto;
 using HangFire.Api.Infra.Repositorio;
 using HangFire.Api.Middleware;
 using HangFire.Api.Servico;
-using Microsoft.AspNetCore.Hosting;
+using HangFire.Api.Util;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -16,51 +16,55 @@ namespace HangFire.Api
         [Obsolete]
         public static void Main(string[] args)
         {
+            HelperConsoleColor.Alerta("Inicializando");
+
             var builder = WebApplication.CreateBuilder(args);
 
-           // var connectionString = builder.Configuration["ConnectionStrings:Gravacao"];
+            HelperConsoleColor.Info("Builder - Configuração da connection string");
+            // var connectionString = builder.Configuration["ConnectionStrings:Gravacao"];
 
             string filePath1 = "C:\\Amauri\\HangFireConnection.txt";
             string connectionString = File.ReadAllText(filePath1).Replace("\\\\", "\\");
 
-            //Configuração do swagger
+            HelperConsoleColor.Info("Builder - Configuração do swagger");
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            //Configuração do serviço HangFire
+            HelperConsoleColor.Info("Builder - Configuração do serviço HangFire");
             builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
             builder.Services.AddHangfireServer();
-            // Configuração do IDbConnection para o Dapper
+            HelperConsoleColor.Info("Builder - Configuração do IDbConnection para o Dapper");
             builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
-            //Configuração do contexto
+            HelperConsoleColor.Info("Builder - Configuração do contexto");
             builder.Services.AddDbContext<CommandContext>(options => options.UseSqlServer(connectionString));
-            //Configuração de dependências de repositórios
+            HelperConsoleColor.Info("Builder - Configuração de dependências de repositórios");
             builder.Services.AddScoped<IMensagemRepositorio, MensagemRepositorio>();
             builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
             builder.Services.AddScoped<IHangFireRepositorio, HangFireRepositorio>();
             builder.Services.AddScoped<IMensagemErroRepositorio, MensagemErroRepositorio>();
-            //Configuração do Mediatr
-             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.UsuarioInserirCommandHandler).Assembly));
- 
-
-            ////Isso garante que todos os RequestHandler necessários sejam registrados com seus ciclos de vida apropriados.
-            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<MensagemInserirCommandRequest>());
-            //Para que o Hangfire possa resolver as dependências da classe HangFireServico
+            HelperConsoleColor.Info("Builder - Configuração do Mediatr");
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Aplicacao.UsuarioCommand.UsuarioInserirCommandHandler).Assembly));
+            builder.Services.AddTransient<HangFireRegistrarMensagemComMediator>();
+            HelperConsoleColor.Info("Builder - Hangfire possa resolver as dependências da classe HangFireServico");
             builder.Services.AddHttpClient<HangFireServico>();
 
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+     
+            HelperConsoleColor.Info("App - Configure the HTTP request pipeline.");
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
-            app.UseHangfireDashboard(); // Opcional: Adiciona uma dashboard para monitoramento dos jobs
-            app.MapHangfireDashboard(); // Mapeia a rota padrão para acessar a dashboard em "/hangfire"
+            HelperConsoleColor.Info("App - Adiciona uma dashboard para monitoramento dos jobs");
+            app.UseHangfireDashboard(); 
+            HelperConsoleColor.Info("App - Mapeia a rota padrão para acessar a dashboard em hangfire");
+            app.MapHangfireDashboard(); 
 
 
             //app.MapPost("usuarios/agendar", (IUsuarioRepositorio userRepository, [FromBody] Usuario user) =>
@@ -74,36 +78,17 @@ namespace HangFire.Api
             //    BackgroundJob.Enqueue(() => userRepository.Inserir(user.Codigo, user.Nome, user.Email));
             //    return Results.Ok("Usuário enfileirado para inserção imediata!");
             //});
- 
 
-            BackgroundJob.Enqueue<HangFireServico>(service => service.InicializacaoDoSistema());
+            HelperConsoleColor.Info("App - HangFireJobs.Inicializacao()");
+            HangFireJobs.Inicializacao();
 
-            ////RecurringJob.AddOrUpdate<LimpaRegistroServico>(
-            ////    "deletar-registros-antigos",
-            ////    service => service.DeletarRegistrosAntigos(),
-            ////    "00 36 15 * * *", // 11:34:10 = "10 34 11 * * *"
-            ////    TimeZoneInfo.Local);
+            //HelperConsoleColor.Info("Criação do jobs");
+            //HangFireJobs.LimparJobsSucceededAntigosExecutaCadaMinuto();
 
-            ////RecurringJob.AddOrUpdate<HangFireServico>(
-            ////    "Limpar-Jobs-Succeeded-Antigos",
-            ////    service => service.LimparJobsSucceededAntigos(),
-            ////    "00 02 08 * * *", // Executa todos os dias às 23:59
-            ////    TimeZoneInfo.Local);
-
-            ////// Agendando o job
-            ////RecurringJob.AddOrUpdate<HangFireServico>(
-            ////    "Limpar-Jobs-Succeeded-Antigos",  // Nome do job
-            ////    service => service.LimparJobsSucceededAntigos(), // Método da instância
-            ////    Cron.Hourly,                          
-            ////    TimeZoneInfo.Local            // Fuso horário local
-            ////);
-
-            
-            HangFireJobs.LimparJobsSucceededAntigosExecutaCadaMinuto();
-
-
+            HelperConsoleColor.Info("App - TratamentoErroMiddleware");
             app.UseMiddleware<TratamentoErroMiddleware>();
             app.MapControllers();
+            HelperConsoleColor.Sucesso("Finalizado!");
             app.Run();
         }
     }

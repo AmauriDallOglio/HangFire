@@ -41,7 +41,7 @@ namespace HangFire.Api.Servico
                 string descricao = $"[LimparJobsSucceededAntigos/HangfireExcluirSucceededCommandHandler] Erro: {mensagemErro}.";
                 Console.WriteLine(descricao);
 
-                MensagemErroInserirCommandRequest requestErro = new MensagemErroInserirCommandRequest() { Descricao = descricao, Chamada = "jskfdhkjashfkhdsfkjsdhfshdfkhsjd" };
+                MensagemErroInserirCommandRequest requestErro = new MensagemErroInserirCommandRequest() { Descricao = descricao, Chamada = "HangFireServico" };
                 MensagemErroInserirCommandResponse responseErro = _iMediator.Send(requestErro, new CancellationToken()).Result;
 
             }

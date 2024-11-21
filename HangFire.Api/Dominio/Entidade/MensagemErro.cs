@@ -5,32 +5,33 @@ using HangFire.Api.Util;
 namespace HangFire.Api.Dominio.Entidade
 {
     [Table("MensagemErro")]
-    public class MensagemErro
+    public class MensagemErro : AtributoBase
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "A data de cadastro é obrigatória.")]
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
-
+ 
         [Required(ErrorMessage = "A chamada é obrigatória.")]
         [StringLength(200, ErrorMessage = "A chamada deve ter no máximo 200 caracteres.")]
-        public string Chamada { get; set; } = string.Empty;
+        public string Chamada { get; private set; } = string.Empty;
 
         [Required(ErrorMessage = "A descrição é obrigatória.")]
         [StringLength(500, ErrorMessage = "A descrição deve ter no máximo 500 caracteres.")]
-        public string Descricao { get; set; } = string.Empty;
+        public string Descricao { get; private set; } = string.Empty;
 
-
-
-        public void Validar()
+        public MensagemErro IncluirDados(string descricao, string chamada)
         {
-            string resultado = new Validador().Validar(this);
-            if (!string.IsNullOrEmpty(resultado))
-            {
-                throw new InvalidOperationException(resultado);
-            }
+            Descricao = descricao;
+            Chamada = chamada;
+
+            return this;
         }
+
+        public MensagemErro AlterarDescricao(string descricao)
+        {
+            Descricao = descricao;
+ 
+
+            return this;
+        }
+
+
     }
 }

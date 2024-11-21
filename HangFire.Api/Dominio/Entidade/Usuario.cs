@@ -5,41 +5,29 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HangFire.Api.Dominio.Entidade
 {
     [Table("Usuario")]
-    public class Usuario
+    public class Usuario : AtributoBase
     {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "O nome é obrigatório.")]
         [StringLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres.")]
-        public string Nome { get; set; } = string.Empty;
+        public string Nome { get; private set; } = string.Empty;
 
         [Required(ErrorMessage = "O código é obrigatório.")]
-        public string Codigo { get; set; } = string.Empty;
+        public string Codigo { get; private set; } = string.Empty;
 
         [Required(ErrorMessage = "O e-mail é obrigatório.")]
         [EmailAddress(ErrorMessage = "O e-mail é inválido.")]
-        public string Email { get; set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
 
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-        public Usuario Incluir()
+        public Usuario InserirDados(string nome, string codigo, string email)
         {
-            Id = 1;
-            Nome = "Nome";
-            Codigo = "Codigo";
-            Email = "Email";
+            Nome = nome;
+            Codigo = codigo;
+            Email = email;
 
             return this;
         }
-
-        public void Validar()
-        {
-            string resultado = new Validador().Validar(this);
-            if (!string.IsNullOrEmpty(resultado))
-            {
-                throw new InvalidOperationException(resultado);
-            }
-        }
+ 
 
         public Usuario IncluirAutomaticamente()
         {

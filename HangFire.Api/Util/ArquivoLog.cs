@@ -8,7 +8,9 @@
             
             var mensagemPersonalizada = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} | {mensagemRetorno}";
             File.AppendAllText(caminhoNomeArquivo, mensagemPersonalizada);
-            Console.WriteLine($"Erro: {mensagemPersonalizada}");
+
+
+            HelperConsoleColor.Erro($"Erro: {mensagemPersonalizada}");
 
             return mensagemRetorno;
         }

@@ -55,7 +55,6 @@ namespace HangFire.Api.Middleware
 
             string mensagemDoLog = await new ArquivoLog().IncluirLinha(_caminhoLog, exception, _PathString, "Erro inesperado");
           
-
             var response = new
             {
                 Codigo = httpCodigoErro,

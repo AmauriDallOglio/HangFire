@@ -4,9 +4,7 @@ namespace HangFire.Api.Aplicacao.MensagemCommand
 {
     public class MensagemInserirCommandRequest : IRequest<MensagemInserirCommandResponse>
     {
- 
-
-            public string Descricao { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
  
     }
 }

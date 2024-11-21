@@ -1,4 +1,7 @@
-﻿namespace HangFire.Api.Dominio.Entidade
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace HangFire.Api.Dominio.Entidade
 {
     public class HangfireJob
     {

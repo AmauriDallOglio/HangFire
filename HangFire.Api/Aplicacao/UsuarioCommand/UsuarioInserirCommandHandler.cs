@@ -2,6 +2,8 @@
 using HangFire.Api.Aplicacao.MensagemCommand;
 using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
+using HangFire.Api.Middleware;
+using HangFire.Api.Util;
 using MediatR;
 
 namespace HangFire.Api.Aplicacao.UsuarioCommand
@@ -10,27 +12,37 @@ namespace HangFire.Api.Aplicacao.UsuarioCommand
     {
         private readonly IUsuarioRepositorio _iUsuarioRepositorio;
         private readonly IMediator _iMediator;
-        public UsuarioInserirCommandHandler(IUsuarioRepositorio iUsuarioRepositorio, IMediator mediator)
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly HangFireRegistrarMensagemComMediator _hangFireRegistrarMensagemComMediator;
+        public UsuarioInserirCommandHandler(IUsuarioRepositorio iUsuarioRepositorio, IMediator mediator, IBackgroundJobClient backgroundJobClient, HangFireRegistrarMensagemComMediator hangFireRegistrarMensagemComMediator)
         {
             _iUsuarioRepositorio = iUsuarioRepositorio;
             _iMediator = mediator;
+            _backgroundJobClient = backgroundJobClient;
+            _hangFireRegistrarMensagemComMediator = hangFireRegistrarMensagemComMediator;
+
         }
 
         public async Task<UsuarioInserirCommandResponse> Handle(UsuarioInserirCommandRequest request, CancellationToken cancellationToken)
         {
-            Usuario usuario = new Usuario() { Codigo = request.Codigo, Email = request.Email, Nome = request.Nome};
+            Usuario usuario = new Usuario().InserirDados(request.Nome, request.Codigo, request.Email);
             usuario.Validar();
 
-            string codigoJob = BackgroundJob.Schedule(() => _iUsuarioRepositorio.InserirAsync(usuario), TimeSpan.FromMinutes(1));
+            // Job pai
+            string codigoJobPai = _backgroundJobClient.Schedule(() => _iUsuarioRepositorio.InserirAsync(usuario), HangFireJobs.Segundos30());
 
-            MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest();
-            mensagem.Descricao = $"UsuarioInserirCommandHandler - Criado Job: {codigoJob} ";
-            var retornoMensagem = _iMediator.Send(mensagem).Result;
-            string mensagemResultado = mensagem.Descricao + $" / MensagemInserirCommandRequest: Criado job: {retornoMensagem}";
+            // Mensagem a ser enviada no job filho
+            MensagemInserirCommandRequest mensagem = new MensagemInserirCommandRequest()
+            {
+                Descricao = $"UsuarioInserirCommandHandler - Criado Job: {codigoJobPai} "
+            };
+            string codigoJobFilho = _backgroundJobClient.ContinueJobWith(codigoJobPai, () => _hangFireRegistrarMensagemComMediator.RegistrarMensagem(mensagem));
 
-            UsuarioInserirCommandResponse response = new UsuarioInserirCommandResponse() { Mensagem = mensagemResultado };
 
-            return response;
+            string mensagemResultado = mensagem.Descricao + $" / MensagemInserirCommandRequest: Criado job filho: {codigoJobFilho}";
+            HelperConsoleColor.Info(mensagemResultado);
+
+            return new UsuarioInserirCommandResponse { Mensagem = mensagemResultado };
         }
     }
 }

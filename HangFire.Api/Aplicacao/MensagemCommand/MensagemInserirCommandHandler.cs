@@ -1,6 +1,8 @@
 ﻿using Hangfire;
 using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
+using HangFire.Api.Middleware;
+using HangFire.Api.Util;
 using MediatR;
 
 namespace HangFire.Api.Aplicacao.MensagemCommand
@@ -9,20 +11,26 @@ namespace HangFire.Api.Aplicacao.MensagemCommand
     {
         private readonly IMensagemRepositorio _iMensagemRepositorio;
         private readonly IMediator _iMediator;
-        public MensagemInserirCommandHandler(IMensagemRepositorio iMensagemRepositorio, IMediator mediator)
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        public MensagemInserirCommandHandler(IMensagemRepositorio iMensagemRepositorio, IMediator mediator, IBackgroundJobClient backgroundJobClient)
         {
             _iMensagemRepositorio = iMensagemRepositorio;
             _iMediator = mediator;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<MensagemInserirCommandResponse> Handle(MensagemInserirCommandRequest request, CancellationToken cancellationToken)
         {
-            Mensagem mensagem = new Mensagem() { Descricao = request.Descricao };
+            Mensagem mensagem = new Mensagem().IncluirDados(request.Descricao);
             mensagem.Validar();
 
-            mensagem.Descricao = $"{DateTime.Now} - MensagemInserirCommandHandler - {request.Descricao}";
-            string codigoJob = BackgroundJob.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), TimeSpan.FromMinutes(1));
-            return new MensagemInserirCommandResponse() { Mensagem = $"Adicionado na fila id: {codigoJob}" };
+            mensagem.AlterarDescricao($"{DateTime.Now} - MensagemInserirCommandHandler - {request.Descricao}");
+ 
+            string codigoJob = _backgroundJobClient.Schedule(() => _iMensagemRepositorio.InserirAsync(mensagem), HangFireJobs.Segundos15());
+
+            HelperConsoleColor.Info($"MensagemInserirCommandHandler - Adicionado na fila id: {codigoJob}");
+
+            return new MensagemInserirCommandResponse() { Mensagem = $"MensagemInserirCommandHandler - Adicionado na fila id: {codigoJob}" };
         }
     }
 }

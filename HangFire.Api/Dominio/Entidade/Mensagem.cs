@@ -5,22 +5,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HangFire.Api.Dominio.Entidade
 {
     [Table("Mensagem")]
-    public class Mensagem
+    public class Mensagem : AtributoBase
     {
-        public int Id { get; set; }
+ 
 
         [Required(ErrorMessage = "A descrição é obrigatório.")]
         [StringLength(1000, ErrorMessage = "A descrição deve ter no máximo 1000 caracteres.")]
-        public string Descricao { get; set; } = string.Empty;
+        public string Descricao { get; private set; } = string.Empty;
 
-        public void Validar()
+        public Mensagem IncluirDados(string descricao)
         {
-            string resultado = new Validador().Validar(this);
-            if (!string.IsNullOrEmpty(resultado))
-            {
-                throw new InvalidOperationException(resultado);
-            }
+            Descricao = descricao;
+            return this;
         }
+
+        public Mensagem AlterarDescricao(string descricao)
+        {
+            Descricao = descricao;
+            return this;
+
+        }
+     
 
     }
 }

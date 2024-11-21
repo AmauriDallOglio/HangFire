@@ -2,6 +2,7 @@
 using HangFire.Api.Dominio.Entidade;
 using HangFire.Api.Dominio.Interface;
 using HangFire.Api.Infra.Contexto;
+using HangFire.Api.Util;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -16,7 +17,6 @@ namespace HangFire.Api.Infra.Repositorio
         {
             _commandContext = context;
             _dbConnection = _commandContext.Database.GetDbConnection();
-
         }
 
         public async Task<int> InserirDapperAsync(string codigo, string nome, string email)
@@ -29,8 +29,18 @@ namespace HangFire.Api.Infra.Repositorio
 
         public async Task<int> InserirAsync(Usuario usuario)
         {
-            var resultado = await _commandContext.Usuario.AddAsync(usuario);
-            var gravado = await _commandContext.SaveChangesAsync();
+            //int gravado = 0;
+            //try
+            //{
+                var resultado = await _commandContext.Usuario.AddAsync(usuario);
+                int gravado = await _commandContext.SaveChangesAsync();
+                HelperConsoleColor.Sucesso("UsuarioRepositorio/InserirAsync: Sucesso!");
+            //}
+            //catch (Exception ex)
+            //{
+            //    await new ArquivoLog().IncluirLinha("logs/error_log.txt", ex, "UsuarioRepositorio/InserirAsync", "UsuarioRepositorio: Erro ao gravar registro!");
+            //}
+
             return gravado;
         }
 
