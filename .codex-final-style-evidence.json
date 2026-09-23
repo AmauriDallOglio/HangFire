@@ -1,0 +1,160 @@
+{
+  "input": "C:\\Amauri\\GitHub\\Hangfire\\Hangfire_Project_Memo.docx",
+  "fonts_by_char_count": {
+    "Georgia": 22095
+  },
+  "direct_run_formatting_runs": 183,
+  "direct_paragraph_formatting_paragraphs": 89,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 146,
+      "text": "Vers\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 147,
+      "text": "Preparado Por",
+      "style": "normal"
+    },
+    {
+      "para_index": 158,
+      "text": "Campo",
+      "style": "normal"
+    },
+    {
+      "para_index": 159,
+      "text": "Detalhes",
+      "style": "normal"
+    },
+    {
+      "para_index": 192,
+      "text": "Componente",
+      "style": "normal"
+    },
+    {
+      "para_index": 193,
+      "text": "Fun\u00e7\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 204,
+      "text": "Tipo de Job",
+      "style": "normal"
+    },
+    {
+      "para_index": 205,
+      "text": "Quando Usar",
+      "style": "normal"
+    },
+    {
+      "para_index": 206,
+      "text": "Exemplo",
+      "style": "normal"
+    },
+    {
+      "para_index": 222,
+      "text": "\u00c1rea de Valida\u00e7\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 223,
+      "text": "Resultado Esperado",
+      "style": "normal"
+    },
+    {
+      "para_index": 252,
+      "text": "Objeto SQL Server",
+      "style": "normal"
+    },
+    {
+      "para_index": 253,
+      "text": "Finalidade",
+      "style": "normal"
+    },
+    {
+      "para_index": 287,
+      "text": "Decis\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 288,
+      "text": "Justificativa",
+      "style": "normal"
+    },
+    {
+      "para_index": 289,
+      "text": "Respons\u00e1vel",
+      "style": "normal"
+    },
+    {
+      "para_index": 317,
+      "text": "Objetivo da Consulta",
+      "style": "normal"
+    },
+    {
+      "para_index": 318,
+      "text": "SQL",
+      "style": "normal"
+    }
+  ],
+  "examples": {
+    "direct_run_formatting": [
+      {
+        "para_index": 1,
+        "run_text": "Memo do Projeto",
+        "style": "Heading 2"
+      },
+      {
+        "para_index": 7,
+        "run_text": "Hangfire",
+        "style": "Title"
+      },
+      {
+        "para_index": 8,
+        "run_text": "Memo do Projeto",
+        "style": "Title"
+      },
+      {
+        "para_index": 24,
+        "run_text": "Preparado para a equipe de desenvolvimento",
+        "style": "Heading 3"
+      },
+      {
+        "para_index": 25,
+        "run_text": "16 de setembro de 2026",
+        "style": "Heading 3"
+      }
+    ],
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 31,
+        "text": "Este memo explica o que \u00e9 o Hangfire, como ele funciona em um projeto .NET e por que ele \u00e9 \u00fatil quando a aplica\u00e7\u00e3o preci",
+        "style": "normal"
+      },
+      {
+        "para_index": 32,
+        "text": "Tamb\u00e9m descreve a estrutura operacional de um projeto com Hangfire e mostra como localizar as tabelas que ele cria em um",
+        "style": "normal"
+      },
+      {
+        "para_index": 33,
+        "text": "",
+        "style": "normal"
+      },
+      {
+        "para_index": 35,
+        "text": "Muitas aplica\u00e7\u00f5es web come\u00e7am executando todas as opera\u00e7\u00f5es de forma s\u00edncrona dentro da requisi\u00e7\u00e3o do usu\u00e1rio. Esse mode",
+        "style": "normal"
+      },
+      {
+        "para_index": 36,
+        "text": "O Hangfire resolve esse problema movendo unidades de trabalho para jobs em segundo plano persistidos. A aplica\u00e7\u00e3o enfile",
+        "style": "normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}
